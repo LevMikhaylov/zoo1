@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import jakarta.persistence.JoinColumn;
+import jakarta.validation.constraints.Size;
 @Entity
 @Data
 @Table(name="Animals")
@@ -21,8 +22,10 @@ public class Animal {
     @Column(nullable = false)
     private long id;
     @Column(nullable = false)
+    @Size(min = 2)
     private String kind;
     @Column(nullable = false)
+    @Size(min = 2)
     private String name;
     @ManyToMany
     @JoinTable(
