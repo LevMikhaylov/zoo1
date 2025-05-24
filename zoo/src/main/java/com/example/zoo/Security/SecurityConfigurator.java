@@ -15,6 +15,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import com.example.zoo.Logging.LoginAttemptAspect;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.core.AuthenticationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -74,18 +76,17 @@ public class SecurityConfigurator {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     private AuthenticationFailureHandler customFailureHandler() {
-    return (HttpRequest request, HttpServletResponse response, Exception exception) -> {
-        String username = request.getParameter("username");
-
-        if (loginAttemptAspect.isLockedOut(username)) {
-            logger.warn("User  " + username + " has been locked out due to too many failed login attempts.");
-            response.sendRedirect("/login?error=locked");
-        } else {
-            logger.warn("Failed login attempt for user: " + username);
-            response.sendRedirect("/login?error");
-        }
-    };
-}
+        return (request, response, exception) -> {
+            String username = request.getParameter("username");
+    
+            if (loginAttemptAspect.isLockedOut(username)) {
+                logger.warn("User " + username + " has been locked out due to too many failed login attempts.");
+                response.sendRedirect("/login?error=locked");
+            } else {
+                logger.warn("Failed login attempt for user: " + username);
+                response.sendRedirect("/login?error");
+            }
+        };
+    }
 }
